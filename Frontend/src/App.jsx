@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import "prismjs/themes/prism-tomorrow.css"
 import Editor from "react-simple-code-editor"
 import prism from "prismjs"
+import "prismjs/components/prism-javascript"
 import Markdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
@@ -35,43 +35,94 @@ function App() {
   }
 
   return (
-    <>
-      <main>
-        <div className="left">
-          <div className="code">
+    <div className="app">
+      <nav className="nav">
+        <div className="nav-brand">
+          <span className="brand-text">codelens</span>
+        </div>
+        <div className="nav-info">
+          <span className="status-dot"></span>
+          <span>beta v0.1</span>
+        </div>
+      </nav>
+      
+      <div className="container">
+        <div className="editor-panel">
+          <div className="panel-top">
+            <span className="panel-label">editor</span>
+            <span className="line-count">{code.split('\n').length} lines</span>
+          </div>
+          
+          <div className="code-wrapper">
             <Editor
               value={code}
               onValueChange={code => setCode(code)}
-              highlight={code => prism.highlight(code, prism.languages.javascript, "javascript")}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 16,
-                border: "1px solid #ddd",
-                borderRadius: "5px",
-                height: "100%",
-                width: "100%"
+              highlight={code => {
+                try {
+                  return prism.highlight(code, prism.languages.javascript, "javascript")
+                } catch {
+                  return code
+                }
               }}
+              padding={24}
+              style={{
+                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                fontSize: 14,
+                lineHeight: 1.7,
+                height: "100%",
+                width: "100%",
+                outline: "none",
+                color: "#e8e8e8",
+                background: "#0d0d0d",
+                minHeight: "100%",
+                caretColor: "#3b82f6"
+              }}
+              textareaClassName="editor-textarea"
+              preClassName="editor-pre"
             />
           </div>
-          <div
+          
+          <button
             onClick={reviewCode}
-            className="review">Review</div>
+            className="analyze-btn"
+            disabled={loading}
+          >
+            {loading ? 'analyzing...' : 'run analysis'}
+          </button>
         </div>
-        <div className="right">
-          {loading ? (
-            <div className="loading">
-              <div className="spinner"></div>
-              <p>Analyzing your code...</p>
-            </div>
-          ) : (
-            <Markdown
-              rehypePlugins={[ rehypeHighlight ]}
-            >{review}</Markdown>
-          )}
+        
+        <div className="results-panel">
+          <div className="panel-top">
+            <span className="panel-label">results</span>
+            {review && !loading && <span className="success-badge">✓ complete</span>}
+          </div>
+          
+          <div className="results-content">
+            {loading ? (
+              <div className="loader-state">
+                <div className="loader">
+                  <div className="loader-bar"></div>
+                </div>
+                <p className="loader-text">running analysis...</p>
+              </div>
+            ) : review ? (
+              <div className="review-output">
+                <Markdown rehypePlugins={[rehypeHighlight]}>{review}</Markdown>
+              </div>
+            ) : (
+              <div className="empty">
+                <p className="empty-text">no results yet</p>
+                <p className="empty-hint">paste your code and run analysis to see feedback</p>
+              </div>
+            )}
+          </div>
         </div>
-      </main>
-    </>
+      </div>
+      
+      <footer className="footer">
+        <p className="footer-text">developed by Aryan 👨🏻‍💻</p>
+      </footer>
+    </div>
   )
 }
 
