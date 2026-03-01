@@ -11,7 +11,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:4173',
   // Add your Vercel frontend URL after deployment
-  // 'https://your-frontend.vercel.app'
+  'https://code-lens-ai-frontend.vercel.app'
 ];
 
 app.use(cors({
