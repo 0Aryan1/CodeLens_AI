@@ -1,28 +1,12 @@
 const express = require('express');
-const aiRoutes = require('./routes/ai.route.js')
+const aiRoutes = require('./routes/ai.route')
 const cors = require('cors')
 
-
-const app = express();
-
-// CORS configuration for Vercel deployment
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'http://localhost:4173',
-  'https://code-lens-ai-frontend.vercel.app'
-];
+const app = express()
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    // Check if origin is in allowedOrigins list
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      return callback(null, true);
-    }
-    
+   
     // Allow all Vercel preview deployments (*.vercel.app)
     if (origin && origin.endsWith('.vercel.app')) {
       return callback(null, true);
@@ -35,12 +19,12 @@ app.use(cors({
 
 
 // Middleware to parse JSON body
-app.use(express.json());
+app.use(express.json())
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+    res.send('Hello World')
+})
 
-app.use('/ai', aiRoutes);
+app.use('/ai', aiRoutes)
 
-module.exports = app;
+module.exports = app

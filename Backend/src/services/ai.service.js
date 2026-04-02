@@ -1,17 +1,10 @@
-const { GoogleGenAI } = require("@google/genai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-async function getCodeReview(code) {
-  const apiKey = process.env.GOOGLE_GEMINI_KEY;  
-
-  const ai = new GoogleGenAI({
-    apiKey: apiKey
-  });
-
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: code,
-    config: {
-      systemInstruction: `Here’s a solid system instruction for your AI code reviewer:
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
+const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash",
+    systemInstruction: `
+                Here’s a solid system instruction for your AI code reviewer:
 
                 AI System Instruction: Senior Code Reviewer (7+ Years of Experience)
 
@@ -82,11 +75,18 @@ async function getCodeReview(code) {
 
                 Your mission is to ensure every piece of code follows high standards. Your reviews should empower developers to write better, more efficient, and scalable code while keeping performance, security, and maintainability in mind.
 
-                Would you like any adjustments based on your specific needs? 🚀
-              `,
-            },
-          });
-          return response.text;
-        }
+                Would you like any adjustments based on your specific needs? 🚀 
+    `
+});
 
-module.exports = getCodeReview;
+
+async function generateContent(prompt) {
+    const result = await model.generateContent(prompt);
+
+    console.log(result.response.text())
+
+    return result.response.text();
+
+}
+
+module.exports = generateContent    
